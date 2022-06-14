@@ -9,6 +9,7 @@ int main()
     int vida = 6, AUX = 0, *ptrL = NULL,*ptrC = NULL, modo = 0, TamL = 6, TamC = 5;
     char tabuleiro[6][5];
 
+    //cria a tabela de modos e verifica se esta dentro de 1 a 3
     do {
         printf("----MODOS----\n");
         printf("FACIL -> 1\n");
@@ -19,6 +20,7 @@ int main()
         system("cls");
     } while (modo < 1 || modo > 3);
 
+    //faz todo o tabuleiro receber x, para fazer a substituição depois
     for(int linha = 0; linha < TamL; linha++){
         for(int coluna = 0; coluna < TamC; coluna++){
             tabuleiro[linha][coluna] = 'x';
