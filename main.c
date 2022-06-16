@@ -21,6 +21,7 @@ int main()
         system("cls");
     } while (modo < 1 || modo > 3);
 
+    //utiliza o ponteiro para definir o tamanho do tabuleiro juntamente com a quantidade de vida
     if(modo == 2){
         *ptrC = 4;
         vida = 4;
@@ -83,6 +84,7 @@ int main()
             vida--;
         }
 
+        //escreve a mensagem dizendo que perdeu
         if (vida == 0){
             system("cls");
             printf("\nVOCE PERDEU!\n");
