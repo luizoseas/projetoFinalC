@@ -6,9 +6,10 @@
 int main()
 {
     char PalavraUsuario[6], PalavraSorteada[6] = "CACAU";
-    int vida = 6, AUX = 0, *ptrL = NULL,*ptrC = NULL, modo = 0, TamL = 6, TamC = 5;
-    char tabuleiro[6][5];
+    int vida = 6, AUX = 0, *ptrC = NULL, modo = 0, TamL = 6, TamC = 5, TamPalavra;
+    char tabuleiro[6][TamC];
 
+    ptrC =  &TamL;
     //cria a tabela de modos e verifica se esta dentro de 1 a 3
     do {
         printf("----MODOS----\n");
@@ -19,6 +20,15 @@ int main()
         scanf("%d", &modo);
         system("cls");
     } while (modo < 1 || modo > 3);
+
+    if(modo == 2){
+        *ptrC = 4;
+        vida = 4;
+    } else if (modo == 3){
+        *ptrC = 2;
+        vida = 2;
+    }
+
 
     //faz todo o tabuleiro receber x, para fazer a substituição depois
     for(int linha = 0; linha < TamL; linha++){
@@ -35,7 +45,8 @@ int main()
         do{
             printf("Digite a palavra: ");
             scanf("%s", PalavraUsuario);
-        } while (strlen(PalavraUsuario) < 5 || strlen(PalavraUsuario) > 5);
+            TamPalavra = strlen(PalavraUsuario);
+        } while (TamPalavra < 5 || TamPalavra > 5);
 
         //transforma a string que o usuario da em maiusculo
         for(int C = 0; C <= 5; C++){
@@ -54,7 +65,7 @@ int main()
             }
         }
 
-        //verifica se a pessoa acertou ou errou o chute
+        //escreve na tela o tabuleiro com o chute do usuario
         for(int linha = 0; linha < TamL; linha++){
             for(int coluna = 0; coluna < TamC; coluna++){
                 printf("[ %c ]", tabuleiro[linha][coluna]);
@@ -62,13 +73,20 @@ int main()
             printf("\n");
         }
 
+        //verifica se a pessoa acertou ou errou o chute
         if(strcmp(PalavraUsuario,PalavraSorteada) == 0){
             system("cls");
-            printf("\nACERTOU!\n");
+            printf("\nVOCE GANHOU!\n");
             printf("A Palavra era %s\n", PalavraSorteada);
             break;
         } else {
             vida--;
+        }
+
+        if (vida == 0){
+            system("cls");
+            printf("\nVOCE PERDEU!\n");
+            printf("A Palavra era %s\n", PalavraSorteada);
         }
         AUX++;
     } while (vida > 0);
