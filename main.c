@@ -3,11 +3,36 @@
 #include <string.h>
 #include <ctype.h>
 
-int main()
-{
-    char PalavraUsuario[6], PalavraSorteada[6] = "CACAU";
-    int vida = 6, AUX = 0, *ptrC = NULL, modo = 0, TamL = 6, TamC = 5, TamPalavra;
+void VerificaChute (int comp, char Palavra[], int *vida, int *acaba){
+    //escreve a mensagem dizendo que voce ganhou
+    if(comp == 0){
+            system("cls");
+            printf("\nVOCE GANHOU!\n");
+            printf("A Palavra era %s\n", Palavra);
+            *acaba = 1;
+        } else {
+            *vida--;
+        }
+
+        //escreve a mensagem dizendo que perdeu
+        if (*vida == 0){
+            system("cls");
+            printf("\nVOCE PERDEU!\n");
+            printf("A Palavra era %s\n", Palavra);
+        }
+}
+
+int main(){
+    char PalavraUsuario[6], PalavraSorteada[6], Palavras[10][6] = {"CACAU","OSTRA","ERROS","ENVIA","EDUCA","DUCHA","DRENA","DIZER","COPIA","AMIGO"};
+    int vida = 6, AUX = 0, *ptrC = NULL, modo = 0, TamL = 6, TamC = 5, TamPalavra, NumAle, Comparacao, acaba = 0;
     char tabuleiro[6][TamC];
+
+    srand(time(NULL));
+    NumAle = rand () %10;
+
+    strcpy(PalavraSorteada, Palavras[NumAle]);
+
+    printf("%s", PalavraSorteada);
 
     ptrC =  &TamL;
     //cria a tabela de modos e verifica se esta dentro de 1 a 3
@@ -41,7 +66,6 @@ int main()
     printf("---TERMO---\n");
 
     do{
-        printf("VIDAS: %d\n",vida);
         //verifica se a palavra digitada tem 5 letras
         do{
             printf("Digite a palavra: ");
@@ -74,21 +98,15 @@ int main()
             printf("\n");
         }
 
-        //verifica se a pessoa acertou ou errou o chute
-        if(strcmp(PalavraUsuario,PalavraSorteada) == 0){
-            system("cls");
-            printf("\nVOCE GANHOU!\n");
-            printf("A Palavra era %s\n", PalavraSorteada);
-            break;
-        } else {
-            vida--;
-        }
+        //compara as duas strings para ver se são iguais
+        Comparacao = strcmp(PalavraUsuario,PalavraSorteada);
 
-        //escreve a mensagem dizendo que perdeu
-        if (vida == 0){
-            system("cls");
-            printf("\nVOCE PERDEU!\n");
-            printf("A Palavra era %s\n", PalavraSorteada);
+        //funcao responsavel por determinar se o jogador ganhou ou perdeu
+        VerificaChute(Comparacao, PalavraSorteada, &vida, &acaba);
+
+        //da o fim para o programa
+        if(acaba == 1){
+            break;
         }
         AUX++;
     } while (vida > 0);
