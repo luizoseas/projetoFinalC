@@ -16,6 +16,7 @@ int main(){
         Comparacao = 0,
         acaba = 0,
         posicaoCorreta[5] = {0,0,0,0,0,0},
+        Existe = 0,
         tamanhoDicionario = obterQuantidadePalavrasDicionario();
 
     char tabuleiro[6][TamC],
@@ -51,7 +52,9 @@ int main(){
     srand(time(NULL));
     NumAle = rand () %tamanhoDicionario;
     strcpy(PalavraSorteada, Palavras[NumAle]);
-
+    for(int C = 0; C <= 5; C++){
+        PalavraSorteada[C] = tolower(PalavraSorteada[C]);
+    }
     //printf("%s", PalavraSorteada);
     ptrC =  &TamL;
 
@@ -124,15 +127,27 @@ int main(){
         printf("\n");
         printf("----------DICA-----------\n");
 
-        printf("A == letra na posicao correta\nE == letra na posicao errada\n");
+        printf("A == letra na posicao correta\nC == letra na posicao errada\nE == letra incorreta\n");
         printf("-------------------------\n");
         Comparacao = 0;
-
+        Existe = 0;
         //compara as duas strings para ver se são iguais
         for(int tamanho = 0;tamanho < 5;tamanho++){
+
+            //verificar se a letra existe na palavra
+            for(int tamanho2 = 0;tamanho2 < 5;tamanho2++){
+                if(PalavraUsuario[tamanho] == PalavraSorteada[tamanho2] && tamanho != tamanho2){
+                    Existe = 1;
+                }
+            }
             if(PalavraUsuario[tamanho] != PalavraSorteada[tamanho]){
                 Comparacao = 1;
-            }else{
+            }
+            if(Existe){
+                posicaoCorreta[tamanho] = 2;
+                Existe = 0;
+            }
+            if(PalavraUsuario[tamanho] == PalavraSorteada[tamanho]){
                 posicaoCorreta[tamanho] = 1;
             }
         }
@@ -143,6 +158,8 @@ int main(){
                 if(linha == AUX){
                     if(posicaoCorreta[coluna] == 1){
                         tabuleiroVer[linha][coluna] = 'A';
+                    }else if(posicaoCorreta[coluna] == 2){
+                        tabuleiroVer[linha][coluna] = 'C';
                     }else{
                         tabuleiroVer[linha][coluna] = 'E';
                     }
@@ -152,7 +169,9 @@ int main(){
                 }
             }
         }
-
+        for(int linha = 0; linha < 5; linha++){
+            posicaoCorreta[linha] = 0;
+        }
         for(int linha = 0; linha < TamL; linha++){
             for(int coluna = 0; coluna < TamC; coluna++){
                 printf("[ %c ]", tabuleiroVer[linha][coluna]);
