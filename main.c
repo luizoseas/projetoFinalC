@@ -4,25 +4,57 @@
 #include <ctype.h>
 
 int main(){
-    int tamanhoDicionario = obterQuantidadePalavrasDicionario();
-    char PalavraUsuario[6], PalavraSorteada[6];
-    int vida = 6, AUX = 0, *ptrC = NULL, modo = 0, TamL = 6, TamC = 5, TamPalavra, NumAle, Comparacao, acaba = 0;
-    char tabuleiro[6][TamC];
-    char **Palavras;
+
+    int vida = 6,
+        AUX = 0,
+        *ptrC = NULL,
+        modo = 0,
+        TamL = 6,
+        TamC = 5,
+        TamPalavra,
+        NumAle,
+        Comparacao = 0,
+        acaba = 0,
+        posicaoCorreta[5] = {0,0,0,0,0,0},
+        tamanhoDicionario = obterQuantidadePalavrasDicionario();
+
+    char tabuleiro[6][TamC],
+         tabuleiroVer[6][TamC],
+         **Palavras,PalavraUsuario[6],
+         PalavraSorteada[6];
+
+
+    //Criar vetor1 para matriz
     Palavras = (int **) malloc(tamanhoDicionario*sizeof(int *));
+
+    //Verificar se foi possivel alocar na memoria
+    if(Palavras == NULL){
+        printf("Erro: Memoria Insuficiente!\n");
+        system("pause");
+        exit(1);
+    }
+
+    //Criar vetores dentro do vetor1 Matriz.
     for(int i =0;i<tamanhoDicionario;i++){
         Palavras[i] = (char *) malloc((5+1)*sizeof(char));
+        if(Palavras[i] == NULL){
+            printf("Erro: Memoria Insuficiente!\n");
+            system("pause");
+            exit(1);
+        }
     }
+
+    //Pega todos as palavras do arquivo dicionario
     obterDicionario(tamanhoDicionario,Palavras);
 
+    //Sortear uma palavra
     srand(time(NULL));
     NumAle = rand () %tamanhoDicionario;
-
     strcpy(PalavraSorteada, Palavras[NumAle]);
 
-    printf("%s", PalavraSorteada);
-
+    //printf("%s", PalavraSorteada);
     ptrC =  &TamL;
+
     //cria a tabela de modos e verifica se esta dentro de 1 a 3
     do {
         printf("----MODOS----\n");
@@ -43,16 +75,15 @@ int main(){
         vida = 2;
     }
 
-
     //faz todo o tabuleiro receber x, para fazer a substituição depois
     for(int linha = 0; linha < TamL; linha++){
         for(int coluna = 0; coluna < TamC; coluna++){
             tabuleiro[linha][coluna] = 'x';
+            tabuleiroVer[linha][coluna] = 'x';
         }
     }
 
     printf("---TERMO---\n");
-
     do{
         //verifica se a palavra digitada tem 5 letras
         do{
@@ -60,13 +91,16 @@ int main(){
             scanf("%s", PalavraUsuario);
             TamPalavra = strlen(PalavraUsuario);
         } while (TamPalavra < 5 || TamPalavra > 5);
+        system("cls");
 
-        //transforma a string que o usuario da em maiusculo
+        //transforma a string que o usuario da em minusculo
         for(int C = 0; C <= 5; C++){
             PalavraUsuario[C] = tolower(PalavraUsuario[C]);
         }
 
         //escreve o tabuleiro
+        printf("--------TABULEIRO--------\n");
+        printf("-------------------------\n");
         for(int linha = 0; linha < TamL; linha++){
             for(int coluna = 0; coluna < TamC; coluna++){
                 if(linha == AUX){
@@ -78,6 +112,7 @@ int main(){
             }
         }
 
+
         //escreve na tela o tabuleiro com o chute do usuario
         for(int linha = 0; linha < TamL; linha++){
             for(int coluna = 0; coluna < TamC; coluna++){
@@ -85,9 +120,46 @@ int main(){
             }
             printf("\n");
         }
+        printf("-------------------------\n");
+        printf("\n");
+        printf("----------DICA-----------\n");
+
+        printf("A == letra na posicao correta\nE == letra na posicao errada\n");
+        printf("-------------------------\n");
+        Comparacao = 0;
 
         //compara as duas strings para ver se são iguais
-        Comparacao = strcmp(PalavraUsuario,PalavraSorteada);
+        for(int tamanho = 0;tamanho < 5;tamanho++){
+            if(PalavraUsuario[tamanho] != PalavraSorteada[tamanho]){
+                Comparacao = 1;
+            }else{
+                posicaoCorreta[tamanho] = 1;
+            }
+        }
+
+        //escrever o tabuleiro Dica
+        for(int linha = 0; linha < TamL; linha++){
+            for(int coluna = 0; coluna < TamC; coluna++){
+                if(linha == AUX){
+                    if(posicaoCorreta[coluna] == 1){
+                        tabuleiroVer[linha][coluna] = 'A';
+                    }else{
+                        tabuleiroVer[linha][coluna] = 'E';
+                    }
+                }
+                if(tabuleiroVer[linha][coluna] == 'x'){
+                    tabuleiroVer[linha][coluna] = ' ';
+                }
+            }
+        }
+
+        for(int linha = 0; linha < TamL; linha++){
+            for(int coluna = 0; coluna < TamC; coluna++){
+                printf("[ %c ]", tabuleiroVer[linha][coluna]);
+            }
+            printf("\n");
+        }
+        printf("-------------------------\n");
 
         //funcao responsavel por determinar se o jogador ganhou ou perdeu
         VerificaChute(Comparacao, PalavraSorteada, &vida, &acaba);
@@ -97,6 +169,7 @@ int main(){
             break;
         }
         AUX++;
+
     } while (vida > 0);
 
     return 0;
@@ -119,42 +192,4 @@ void VerificaChute (int comp, char Palavra[], int *vida, int *acaba){
         printf("\nVOCE PERDEU!\n");
         printf("A Palavra era %s\n", Palavra);
     }
-}
-
-void obterDicionario(int qntPalavras,char **dicionario){
-    int coluna = 0;
-    int linha = 0;
-    FILE *arquivo = fopen("dicionario.txt","r");
-    if(arquivo != NULL){
-        char ch = getc(arquivo);
-
-        while(linha < qntPalavras){
-            if(ch == '\n'){
-                linha++;
-                coluna = 0;
-            }else{
-                dicionario[linha][coluna] = ch;
-                coluna++;
-            }
-            ch = getc(arquivo);
-        }
-
-    }
-    fclose(arquivo);
-}
-
-int obterQuantidadePalavrasDicionario(){
-    int contador = 0;
-    FILE *arquivo = fopen("dicionario.txt","r");
-    if(arquivo != NULL){
-        char ch = getc(arquivo);
-        while(ch != EOF){
-            if(ch == '\n'){
-                contador++;
-            }
-            ch = getc(arquivo);
-        }
-    }
-    fclose(arquivo);
-    return contador;
 }
