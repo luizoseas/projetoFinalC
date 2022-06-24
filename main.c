@@ -3,32 +3,20 @@
 #include <string.h>
 #include <ctype.h>
 
-void VerificaChute (int comp, char Palavra[], int *vida, int *acaba){
-    //escreve a mensagem dizendo que voce ganhou
-    if(comp == 0){
-            system("cls");
-            printf("\nVOCE GANHOU!\n");
-            printf("A Palavra era %s\n", Palavra);
-            *acaba = 1;
-        } else {
-            *vida--;
-        }
-
-        //escreve a mensagem dizendo que perdeu
-        if (*vida == 0){
-            system("cls");
-            printf("\nVOCE PERDEU!\n");
-            printf("A Palavra era %s\n", Palavra);
-        }
-}
-
 int main(){
-    char PalavraUsuario[6], PalavraSorteada[6], Palavras[10][6] = {"CACAU","OSTRA","ERROS","ENVIA","EDUCA","DUCHA","DRENA","DIZER","COPIA","AMIGO"};
+    int tamanhoDicionario = obterQuantidadePalavrasDicionario();
+    char PalavraUsuario[6], PalavraSorteada[6];
     int vida = 6, AUX = 0, *ptrC = NULL, modo = 0, TamL = 6, TamC = 5, TamPalavra, NumAle, Comparacao, acaba = 0;
     char tabuleiro[6][TamC];
+    char **Palavras;
+    Palavras = (int **) malloc(tamanhoDicionario*sizeof(int *));
+    for(int i =0;i<tamanhoDicionario;i++){
+        Palavras[i] = (char *) malloc((5+1)*sizeof(char));
+    }
+    obterDicionario(tamanhoDicionario,Palavras);
 
     srand(time(NULL));
-    NumAle = rand () %10;
+    NumAle = rand () %tamanhoDicionario;
 
     strcpy(PalavraSorteada, Palavras[NumAle]);
 
@@ -75,7 +63,7 @@ int main(){
 
         //transforma a string que o usuario da em maiusculo
         for(int C = 0; C <= 5; C++){
-            PalavraUsuario[C] = toupper(PalavraUsuario[C]);
+            PalavraUsuario[C] = tolower(PalavraUsuario[C]);
         }
 
         //escreve o tabuleiro
@@ -112,4 +100,61 @@ int main(){
     } while (vida > 0);
 
     return 0;
+}
+
+void VerificaChute (int comp, char Palavra[], int *vida, int *acaba){
+    //escreve a mensagem dizendo que voce ganhou
+    if(comp == 0){
+        system("cls");
+        printf("\nVOCE GANHOU!\n");
+        printf("A Palavra era %s\n", Palavra);
+        *acaba = 1;
+    } else {
+        *vida = *vida - 1;
+    }
+
+    //escreve a mensagem dizendo que perdeu
+    if (*vida == 0){
+        system("cls");
+        printf("\nVOCE PERDEU!\n");
+        printf("A Palavra era %s\n", Palavra);
+    }
+}
+
+void obterDicionario(int qntPalavras,char **dicionario){
+    int coluna = 0;
+    int linha = 0;
+    FILE *arquivo = fopen("dicionario.txt","r");
+    if(arquivo != NULL){
+        char ch = getc(arquivo);
+
+        while(linha < qntPalavras){
+            if(ch == '\n'){
+                linha++;
+                coluna = 0;
+            }else{
+                dicionario[linha][coluna] = ch;
+                coluna++;
+            }
+            ch = getc(arquivo);
+        }
+
+    }
+    fclose(arquivo);
+}
+
+int obterQuantidadePalavrasDicionario(){
+    int contador = 0;
+    FILE *arquivo = fopen("dicionario.txt","r");
+    if(arquivo != NULL){
+        char ch = getc(arquivo);
+        while(ch != EOF){
+            if(ch == '\n'){
+                contador++;
+            }
+            ch = getc(arquivo);
+        }
+    }
+    fclose(arquivo);
+    return contador;
 }
